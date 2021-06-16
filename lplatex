@@ -1,0 +1,24 @@
+#!/usr/bin/bash
+
+
+printf '$\\begin{array}{l'
+for num in head -1 test.txt; do
+    printf 'rc';
+done
+echo 'l}'
+printf '\\text{maximize}'
+sed 's/[ ]/ \& + \& /g' test.txt | sed 's/\+ \& -/- \& /g' | 
+awk '{
+    for (i = 1; i <= NF; i+=1)
+        if ((i - 1)%4 != 0 || i == NF)
+            printf $i; 
+        else 
+            printf $i "x_" (i - 1)/4 + 1;
+        if (NR > 1)
+            print "&=&w_" NR - 1 "\\\\";
+        else
+            print "\\\\";
+}' |
+sed 's/^/\&/g' | sed 's/\&1x/\&x/g' | sed 's/\&0x_[0-9]*/\& /g' | sed 's/[+-]\& /\&/g' | sed 's/[+-]\&0/\&/g' | sed 's/\&/ \& /g' |
+sed '2 s/./\\text{subject to}&/'
+printf '\\end{array}$\n'
